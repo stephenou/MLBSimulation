@@ -6,21 +6,6 @@
 
 import random
 
-def get_scores():
-	home_score, away_score = 0, 0
-	for i in range(9):
-		if random.choice([True, False]):
-			home_score += 1
-		else:
-			away_score += 1
-	return home_score, away_score
-
-def addGame(games, home_team, away_team):
-	games.append({
-		"home_team": home_team,
-		"away_team": away_team
-	})
-
 def create_mlb():
 	mlb = {
 		"American League": {
@@ -72,6 +57,24 @@ def create_mlb():
 	}
 	return mlb
 
+
+def get_scores():
+	home_score, away_score = 0, 0
+	for i in range(9):
+		if random.choice([True, False]):
+			home_score += 1
+		else:
+			away_score += 1
+	return home_score, away_score
+
+
+def addGame(games, home_team, away_team):
+	games.append({
+		"home_team": home_team,
+		"away_team": away_team
+	})
+
+
 def addIntraDivisionIntraLeagueGames(mlb, games):
 	for league, divisions in mlb.iteritems():
 		for division, teams in divisions.iteritems():
@@ -80,6 +83,7 @@ def addIntraDivisionIntraLeagueGames(mlb, games):
 					if home_team is not away_team:
 						for i in range(1):
 							addGame(games, home_team, away_team)
+
 
 def addInterDivisionIntraLeagueGames(mlb, games):
 	for league, divisions in mlb.iteritems():
@@ -91,6 +95,7 @@ def addInterDivisionIntraLeagueGames(mlb, games):
 						for away_team in away_teams:
 							for i in range(1):
 								addGame(games, home_team, away_team)
+
 
 def addInterDivisionInterLeagueGames(mlb, games):
 	for home_league, home_divisions in mlb.iteritems():
@@ -104,16 +109,19 @@ def addInterDivisionInterLeagueGames(mlb, games):
 								for i in range(1):
 									addGame(games, home_team, away_team)
 
+
 def planSchedule(mlb, games):
 	addIntraDivisionIntraLeagueGames(mlb, games)
 	addInterDivisionIntraLeagueGames(mlb, games)
 	addInterDivisionInterLeagueGames(mlb, games)
+
 
 def playGames(games):
 	for index, game in enumerate(games):
 		home_score, away_score = get_scores()
 		games[index]["home_score"] = home_score
 		games[index]["away_score"] = away_score
+
 
 def initializeTeams(mlb, standings):
 	for league, divisions in mlb.iteritems():
@@ -125,6 +133,7 @@ def initializeTeams(mlb, standings):
 					"points_won": 0,
 					"points_lost": 0
 				}
+
 
 def createStandings(games, standings):
 	initializeTeams(mlb, standings)
@@ -140,6 +149,7 @@ def createStandings(games, standings):
 			standings[game["home_team"]]["games_lost"] += 1
 			standings[game["away_team"]]["games_won"] += 1
 
+
 def displayScores(games):
 	for game in games:
 		print "%s %d - %d %s" % (
@@ -148,6 +158,7 @@ def displayScores(games):
 			game["away_score"],
 			game["away_team"]
 		)
+
 
 def displayStandings(standings):
 	for team, stats in standings.iteritems():
@@ -158,6 +169,6 @@ def displayStandings(standings):
 mlb, games, standings = create_mlb(), [], {}
 planSchedule(mlb, games)
 playGames(games)
-createStandings(games, standings);
+createStandings(games, standings)
 displayScores(games)
 displayStandings(standings)
