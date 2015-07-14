@@ -15,108 +15,108 @@ def get_scores():
 			away_score += 1
 	return home_score, away_score
 
-# Teams are categorized by league, and then by division.
-mlb = {
-	"American League": {
-		"East": [
-			"Baltimore Orioles",
-			"Boston Red Sox",
-			"New York Yankees",
-			"Tampa Bay Rays",
-			"Toronto Blue Jays"
-		],
-		"Central": [
-			"Chicago White Sox",
-			"Cleveland Indians",
-			"Detroit Tigers",
-			"Kansas City Royals",
-			"Minnesota Twins"
-		],
-		"West": [
-			"Anaheim Angels",
-			"Houston Astros",
-			"Oakland Athletics",
-			"Seattle Mariners",
-			"Texas Rangers"
-		]
-	},
-	"National League": {
-		"East": [
-			"Atlanta Braves",
-			"Miami Marlins",
-			"New York Mets",
-			"Philadelphia Phillies",
-			"Washington Nationals"
-		],
-		"Central": [
-			"Chicago Cubs",
-			"Cincinnati Reds",
-			"Milwaukee Brewers",
-			"Pittsburgh Pirates",
-			"St. Louis Cardinals"
-		],
-		"West": [
-			"Arizona Diamondbacks",
-			"Colorado Rockies",
-			"Los Angeles Dodgers",
-			"San Diego Padres",
-			"San Francisco Giants"
-		]
+def addGame(games, home_team, away_team, home_score, away_score):
+	games.append({
+		"home_team": home_team,
+		"away_team": away_team,
+		"home_score": home_score,
+		"away_score": away_score
+	})
+
+def create_mlb():
+	mlb = {
+		"American League": {
+			"East": [
+				"Baltimore Orioles",
+				"Boston Red Sox",
+				"New York Yankees",
+				"Tampa Bay Rays",
+				"Toronto Blue Jays"
+			],
+			"Central": [
+				"Chicago White Sox",
+				"Cleveland Indians",
+				"Detroit Tigers",
+				"Kansas City Royals",
+				"Minnesota Twins"
+			],
+			"West": [
+				"Anaheim Angels",
+				"Houston Astros",
+				"Oakland Athletics",
+				"Seattle Mariners",
+				"Texas Rangers"
+			]
+		},
+		"National League": {
+			"East": [
+				"Atlanta Braves",
+				"Miami Marlins",
+				"New York Mets",
+				"Philadelphia Phillies",
+				"Washington Nationals"
+			],
+			"Central": [
+				"Chicago Cubs",
+				"Cincinnati Reds",
+				"Milwaukee Brewers",
+				"Pittsburgh Pirates",
+				"St. Louis Cardinals"
+			],
+			"West": [
+				"Arizona Diamondbacks",
+				"Colorado Rockies",
+				"Los Angeles Dodgers",
+				"San Diego Padres",
+				"San Francisco Giants"
+			]
+		}
 	}
-}
+	return mlb
+
+def playIntraDivisionIntraLeagueGames(mlb, games, standings):
+	for league, divisions in mlb.iteritems():
+		for division, teams in divisions.iteritems():
+			for home_team in teams:
+				for away_team in teams:
+					if home_team is not away_team:
+						for i in range(1):
+							home_score, away_score = get_scores()
+							addGame(games, home_team, away_team, home_score, away_score)
+
+def playInterDivisionIntraLeagueGames(mlb, games, standings):
+	for league, divisions in mlb.iteritems():
+		for home_division, home_teams in divisions.iteritems():
+			divisions_to_play = [division for division in divisions.keys() if division is not home_division]
+			for away_division, away_teams in divisions.iteritems():
+				if away_division in divisions_to_play:
+					for home_team in home_teams:
+						for away_team in away_teams:
+							for i in range(1):
+								home_score, away_score = get_scores()
+								addGame(games, home_team, away_team, home_score, away_score)
+
+def playInterDivisionInterLeagueGames(mlb, games, standings):
+	for home_league, home_divisions in mlb.iteritems():
+		leagues_to_play = [league for league in mlb.keys() if league is not home_league]
+		for away_league, away_divisions in mlb.iteritems():
+			if away_league in leagues_to_play: 
+				for home_division, home_teams in home_divisions.iteritems():
+					for home_team in home_teams:
+						for away_division, away_teams in away_divisions.iteritems():
+							for away_team in away_teams:
+								for i in range(1):
+									home_score, away_score = get_scores()
+									addGame(games, home_team, away_team, home_score, away_score)
 
 games = []
 standings = []
 
-# Intra-division.
-for league, divisions in mlb.iteritems():
-	for division, teams in divisions.iteritems():
-		for home_team in teams:
-			for away_team in teams:
-				if home_team is not away_team:
-					for i in range(1):
-						home_score, away_score = get_scores()
-						games.append({
-							"home_team": home_team,
-							"away_team": away_team,
-							"home_score": home_score,
-							"away_score": away_score
-						})
+mlb = create_mlb()
 
-# Inter-division. Intra-league.
-for league, divisions in mlb.iteritems():
-	for home_division, home_teams in divisions.iteritems():
-		divisions_to_play = [division for division in divisions.keys() if division is not home_division]
-		for away_division, away_teams in divisions.iteritems():
-			if away_division in divisions_to_play:
-				for home_team in home_teams:
-					for away_team in away_teams:
-						for i in range(1):
-							home_score, away_score = get_scores()
-							games.append({
-								"home_team": home_team,
-								"away_team": away_team,
-								"home_score": home_score,
-								"away_score": away_score
-							})
-
-# Inter-league.
-for home_league, home_divisions in mlb.iteritems():
-	leagues_to_play = [league for league in mlb.keys() if league is not home_league]
-	for away_league, away_divisions in mlb.iteritems():
-		if away_league in leagues_to_play: 
-			for home_division, home_teams in home_divisions.iteritems():
-				for home_team in home_teams:
-					for away_division, away_teams in away_divisions.iteritems():
-						for away_team in away_teams:
-							for i in range(1):
-								home_score, away_score = get_scores()
-								games.append({
-									"home_team": home_team,
-									"away_team": away_team,
-									"home_score": home_score,
-									"away_score": away_score
-								})
+playIntraDivisionIntraLeagueGames(mlb, games, standings)
+playInterDivisionIntraLeagueGames(mlb, games, standings)
+playInterDivisionInterLeagueGames(mlb, games, standings)
 
 for game in games:
 	print "%s %d - %d %s" % (
