@@ -68,6 +68,7 @@ mlb = {
 games = []
 standings = []
 
+# Intra-division. Intra-league.
 for league, divisions in mlb.iteritems():
 	for division, teams in divisions.iteritems():
 		for home_team in teams:
@@ -81,6 +82,23 @@ for league, divisions in mlb.iteritems():
 							"home_score": home_score,
 							"away_score": away_score
 						})
+
+# Inter-division. Intra-league.
+for league, divisions in mlb.iteritems():
+	for home_division, home_teams in divisions.iteritems():
+		divisions_to_play = [division for division in divisions.keys() if division is not home_division]
+		for away_division, away_teams in divisions.iteritems():
+			if away_division in divisions_to_play:
+				for home_team in home_teams:
+					for away_team in away_teams:
+						for i in range(1):
+							home_score, away_score = get_scores()
+							games.append({
+								"home_team": home_team,
+								"away_team": away_team,
+								"home_score": home_score,
+								"away_score": away_score
+							})
 
 for game in games:
 	print "%s %d - %d %s" % (
