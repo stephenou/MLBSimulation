@@ -4,9 +4,15 @@
 # Author: Stephen Ou
 # -----------------------------------------------------
 
+import random
+
 def get_scores():
-	home_score = random.randInt(0, 9)
-	away_score = 9 - home_score
+	home_score = away_score = 0
+	for i in range(9):
+		if random.choice([True, False]):
+			home_score += 1
+		else:
+			away_score += 1
 	return home_score, away_score
 
 # Teams are categorized by league, and then by division.
@@ -80,8 +86,8 @@ for game in games:
 	print "%s %d - %d %s" % (
 		game["home_team"],
 		game["home_score"],
-		game["away_team"],
-		game["away_score"]
+		game["away_score"],
+		game["away_team"]
 	)
 
 # for league, divisions in mlb.iteritems():
