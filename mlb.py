@@ -15,12 +15,10 @@ def get_scores():
 			away_score += 1
 	return home_score, away_score
 
-def addGame(games, home_team, away_team, home_score, away_score):
+def addGame(games, home_team, away_team):
 	games.append({
 		"home_team": home_team,
-		"away_team": away_team,
-		"home_score": home_score,
-		"away_score": away_score
+		"away_team": away_team
 	})
 
 def create_mlb():
@@ -74,17 +72,16 @@ def create_mlb():
 	}
 	return mlb
 
-def playIntraDivisionIntraLeagueGames(mlb, games, standings):
+def addIntraDivisionIntraLeagueGames(mlb, games, standings):
 	for league, divisions in mlb.iteritems():
 		for division, teams in divisions.iteritems():
 			for home_team in teams:
 				for away_team in teams:
 					if home_team is not away_team:
 						for i in range(1):
-							home_score, away_score = get_scores()
-							addGame(games, home_team, away_team, home_score, away_score)
+							addGame(games, home_team, away_team)
 
-def playInterDivisionIntraLeagueGames(mlb, games, standings):
+def addInterDivisionIntraLeagueGames(mlb, games, standings):
 	for league, divisions in mlb.iteritems():
 		for home_division, home_teams in divisions.iteritems():
 			divisions_to_play = [division for division in divisions.keys() if division is not home_division]
@@ -93,10 +90,9 @@ def playInterDivisionIntraLeagueGames(mlb, games, standings):
 					for home_team in home_teams:
 						for away_team in away_teams:
 							for i in range(1):
-								home_score, away_score = get_scores()
-								addGame(games, home_team, away_team, home_score, away_score)
+								addGame(games, home_team, away_team)
 
-def playInterDivisionInterLeagueGames(mlb, games, standings):
+def addInterDivisionInterLeagueGames(mlb, games, standings):
 	for home_league, home_divisions in mlb.iteritems():
 		leagues_to_play = [league for league in mlb.keys() if league is not home_league]
 		for away_league, away_divisions in mlb.iteritems():
@@ -106,27 +102,33 @@ def playInterDivisionInterLeagueGames(mlb, games, standings):
 						for away_division, away_teams in away_divisions.iteritems():
 							for away_team in away_teams:
 								for i in range(1):
-									home_score, away_score = get_scores()
-									addGame(games, home_team, away_team, home_score, away_score)
+									addGame(games, home_team, away_team)
+
+def planSchedule(mlb, games, standings):
+	addIntraDivisionIntraLeagueGames(mlb, games, standings)
+	addInterDivisionIntraLeagueGames(mlb, games, standings)
+	addInterDivisionInterLeagueGames(mlb, games, standings)
+
+def playGames(games):
+	for index, game in enumerate(games):
+		home_score, away_score = get_scores()
+		games[index]["home_score"] = home_score
+		games[index]["away_score"] = away_score
+
+def displayScores(games):
+	for game in games:
+		print "%s %d - %d %s" % (
+			game["home_team"],
+			game["home_score"],
+			game["away_score"],
+			game["away_team"]
+		)
+
+# Main flow starts here
 
 games = []
 standings = []
-
 mlb = create_mlb()
-
-playIntraDivisionIntraLeagueGames(mlb, games, standings)
-playInterDivisionIntraLeagueGames(mlb, games, standings)
-playInterDivisionInterLeagueGames(mlb, games, standings)
-
-for game in games:
-	print "%s %d - %d %s" % (
-		game["home_team"],
-		game["home_score"],
-		game["away_score"],
-		game["away_team"]
-	)
-
-# for league, divisions in mlb.iteritems():
-# 	for division, teams in divisions.iteritems():
-# 		for team in teams:
-# 			print "%s in %s in %s" % (team, division, league)
+planSchedule(mlb, games, standings)
+playGames(games)
+displayScores(games)
