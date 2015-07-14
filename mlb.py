@@ -114,6 +114,7 @@ def planSchedule(mlb, games):
 	addIntraDivisionIntraLeagueGames(mlb, games)
 	addInterDivisionIntraLeagueGames(mlb, games)
 	addInterDivisionInterLeagueGames(mlb, games)
+	random.shuffle(games)
 
 
 def playGames(games):
@@ -152,7 +153,7 @@ def createStandings(games, standings):
 
 def displayScores(games):
 	for game in games:
-		print "%s %d - %d %s" % (
+		print "%-24s %d - %d %24s" % (
 			game["home_team"],
 			game["home_score"],
 			game["away_score"],
@@ -162,7 +163,13 @@ def displayScores(games):
 
 def displayStandings(standings):
 	for team, stats in standings.iteritems():
-		print "%s: %d W, %d L" % (team, stats["games_won"], stats["games_lost"])
+		print ("%-24s %d W {s} %d L {s} %d S {s} %d G" % (
+			team,
+			stats["games_won"],
+			stats["games_lost"],
+			stats["points_won"],
+			stats["points_lost"]
+		)).format(s=" " * 2)
 
 # Main flow starts here
 
