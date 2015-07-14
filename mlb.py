@@ -4,6 +4,11 @@
 # Author: Stephen Ou
 # -----------------------------------------------------
 
+def get_scores():
+	home_score = random.randInt(0, 9)
+	away_score = 9 - home_score
+	return home_score, away_score
+
 # Teams are categorized by league, and then by division.
 mlb = {
 	"American League": {
@@ -62,13 +67,22 @@ for league, divisions in mlb.iteritems():
 		for home_team in teams:
 			for away_team in teams:
 				if home_team is not away_team:
-					for i in range(4):
+					for i in range(1):
+						home_score, away_score = get_scores()
 						games.append({
 							"home_team": home_team,
-							"away_team": away_team
+							"away_team": away_team,
+							"home_score": home_score,
+							"away_score": away_score
 						})
 
-print len(games)
+for game in games:
+	print "%s %d - %d %s" % (
+		game["home_team"],
+		game["home_score"],
+		game["away_team"],
+		game["away_score"]
+	)
 
 # for league, divisions in mlb.iteritems():
 # 	for division, teams in divisions.iteritems():
