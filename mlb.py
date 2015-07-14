@@ -54,7 +54,23 @@ mlb = {
 	}
 }
 
+games = []
+standings = []
+
 for league, divisions in mlb.iteritems():
 	for division, teams in divisions.iteritems():
-		for team in teams:
-			print "%s in %s in %s" % (team, division, league)
+		for home_team in teams:
+			for away_team in teams:
+				if home_team is not away_team:
+					for i in range(4):
+						games.append({
+							"home_team": home_team,
+							"away_team": away_team
+						})
+
+print len(games)
+
+# for league, divisions in mlb.iteritems():
+# 	for division, teams in divisions.iteritems():
+# 		for team in teams:
+# 			print "%s in %s in %s" % (team, division, league)
