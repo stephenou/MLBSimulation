@@ -1,4 +1,11 @@
-teams = {
+# -----------------------------------------------------
+# File: mlb.py
+# Description: mlb.py is a simulation of an MLB season.
+# Author: Stephen Ou
+# -----------------------------------------------------
+
+# Teams are categorized by league, and then by division.
+mlb = {
 	"American League": {
 		"East": [
 			"Baltimore Orioles",
@@ -47,4 +54,7 @@ teams = {
 	}
 }
 
-print teams
+for league, divisions in mlb.iteritems():
+	for division, teams in divisions.iteritems():
+		for team in teams:
+			print "%s in %s in %s" % (team, division, league)
