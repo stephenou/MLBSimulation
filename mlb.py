@@ -4,7 +4,7 @@
 # Author: Stephen Ou
 # -----------------------------------------------------
 
-import random
+import random, sys, getopt
 
 def create_mlb():
 	mlb = {
@@ -124,11 +124,11 @@ def playGames(games):
 		games[index]["away_score"] = away_score
 
 
-def initializeTeams(mlb, standings):
+def initializeTeams(mlb, rankings):
 	for league, divisions in mlb.iteritems():
 		for division, teams in divisions.iteritems():
 			for team in teams:
-				standings[team] = {
+				rankings[team] = {
 					"games_won": 0,
 					"games_lost": 0,
 					"points_won": 0,
@@ -136,19 +136,19 @@ def initializeTeams(mlb, standings):
 				}
 
 
-def createStandings(games, standings):
-	initializeTeams(mlb, standings)
+def createRankings(games, rankings):
+	initializeTeams(mlb, rankings)
 	for game in games:
-		standings[game["home_team"]]["points_won"] += game["home_score"]
-		standings[game["home_team"]]["points_lost"] += game["away_score"]
-		standings[game["away_team"]]["points_won"] += game["away_score"]
-		standings[game["away_team"]]["points_lost"] += game["home_score"]
+		rankings[game["home_team"]]["points_won"] += game["home_score"]
+		rankings[game["home_team"]]["points_lost"] += game["away_score"]
+		rankings[game["away_team"]]["points_won"] += game["away_score"]
+		rankings[game["away_team"]]["points_lost"] += game["home_score"]
 		if game["home_score"] > game["away_score"]:
-			standings[game["home_team"]]["games_won"] += 1
-			standings[game["away_team"]]["games_lost"] += 1
+			rankings[game["home_team"]]["games_won"] += 1
+			rankings[game["away_team"]]["games_lost"] += 1
 		else:
-			standings[game["home_team"]]["games_lost"] += 1
-			standings[game["away_team"]]["games_won"] += 1
+			rankings[game["home_team"]]["games_lost"] += 1
+			rankings[game["away_team"]]["games_won"] += 1
 
 
 def displayScores(games):
@@ -161,8 +161,8 @@ def displayScores(games):
 		)
 
 
-def displayStandings(standings):
-	for team, stats in standings.iteritems():
+def displayRankings(rankings):
+	for team, stats in rankings.iteritems():
 		print ("%-24s %d W {s} %d L {s} %d S {s} %d G" % (
 			team,
 			stats["games_won"],
@@ -173,9 +173,10 @@ def displayStandings(standings):
 
 # Main flow starts here
 
-mlb, games, standings = create_mlb(), [], {}
+options = get_options()
+mlb, games, rankings = create_mlb(), [], {}
 planSchedule(mlb, games)
 playGames(games)
-createStandings(games, standings)
+createRankings(games, rankings)
 displayScores(games)
-displayStandings(standings)
+displayRankings(rankings)
