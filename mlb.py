@@ -6,6 +6,27 @@
 
 import random, sys, getopt
 
+def get_options():
+	options = [
+		{
+			"short": "h",
+			"full": "help",
+			"default": False,
+			"description": "Display this message."
+		}, {
+			"short": "r",
+			"full": "no-rankings",
+			"default": False,
+			"description": "The rankings will not be displayed."
+		}, {
+			"short": "s",
+			"full": "no-scores",
+			"default": False,
+			"description": "The scores will not be displayed."
+		}
+	]
+	return options
+
 def create_mlb():
 	mlb = {
 		"American League": {
@@ -57,6 +78,22 @@ def create_mlb():
 	}
 	return mlb
 
+
+def get_config(argv, options):
+	config = {}
+	optstr = ""
+	for option in options:
+		config[option["short"]] = option["default"]
+		optstr += option["short"]
+	opts, args = getopt.getopt(argv, optstr)
+	for opt, arg in opts:
+		for option in options:
+			if opt in ("-" + option["short"], "--" + option["full"]):
+				if arg == "":
+					config[option["short"]] = True
+				else:
+					config[option["short"]] = arg
+	return config
 
 def get_scores():
 	home_score, away_score = 0, 0
@@ -136,7 +173,7 @@ def initializeTeams(mlb, rankings):
 				}
 
 
-def createRankings(games, rankings):
+def createRankings(mlb, games, rankings):
 	initializeTeams(mlb, rankings)
 	for game in games:
 		rankings[game["home_team"]]["points_won"] += game["home_score"]
@@ -171,12 +208,17 @@ def displayRankings(rankings):
 			stats["points_lost"]
 		)).format(s=" " * 2)
 
-# Main flow starts here
 
-options = get_options()
-mlb, games, rankings = create_mlb(), [], {}
-planSchedule(mlb, games)
-playGames(games)
-createRankings(games, rankings)
-displayScores(games)
-displayRankings(rankings)
+def main(argv):
+	config = get_config(argv, get_options())
+	mlb, games, rankings = create_mlb(), [], {}
+	planSchedule(mlb, games)
+	playGames(games)
+	createRankings(mlb, games, rankings)
+	if not config["s"]:
+		displayScores(games)
+	if not config["r"]:
+		displayRankings(rankings)
+
+if __name__ == "__main__":
+   main(sys.argv[1:])
