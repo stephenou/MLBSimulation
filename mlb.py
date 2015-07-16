@@ -20,9 +20,24 @@ def get_options():
 			"description": "The rankings will not be displayed."
 		}, {
 			"short": "s",
-			"full": "no-scores",
+			"full": "scores",
 			"default": False,
-			"description": "The scores will not be displayed."
+			"description": "Display the scores."
+		}, {
+			"short": "i",
+			"full": "num-division",
+			"default": 4,
+			"description": "The number of games a team plays its division rivals at home."
+		}, {
+			"short": "j",
+			"full": "num-league",
+			"default": 2,
+			"description": "The number of games a team plays its league rivals at home."
+		}, {
+			"short": "k",
+			"full": "num-others",
+			"default": 1,
+			"description": "The number of games a team plays its non-league rivals at home."
 		}
 	]
 	return options
@@ -121,17 +136,17 @@ def addGame(games, home_team, away_team):
 	})
 
 
-def addIntraDivisionIntraLeagueGames(mlb, games):
+def addIntraDivisionIntraLeagueGames(mlb, games, num):
 	for league, divisions in mlb.iteritems():
 		for division, teams in divisions.iteritems():
 			for home_team in teams:
 				for away_team in teams:
 					if home_team is not away_team:
-						for i in range(1):
+						for i in range(num):
 							addGame(games, home_team, away_team)
 
 
-def addInterDivisionIntraLeagueGames(mlb, games):
+def addInterDivisionIntraLeagueGames(mlb, games, num):
 	for league, divisions in mlb.iteritems():
 		for home_division, home_teams in divisions.iteritems():
 			divisions_to_play = [division for division in divisions.keys() if division is not home_division]
@@ -139,11 +154,11 @@ def addInterDivisionIntraLeagueGames(mlb, games):
 				if away_division in divisions_to_play:
 					for home_team in home_teams:
 						for away_team in away_teams:
-							for i in range(1):
+							for i in range(num):
 								addGame(games, home_team, away_team)
 
 
-def addInterDivisionInterLeagueGames(mlb, games):
+def addInterDivisionInterLeagueGames(mlb, games, num):
 	for home_league, home_divisions in mlb.iteritems():
 		leagues_to_play = [league for league in mlb.keys() if league is not home_league]
 		for away_league, away_divisions in mlb.iteritems():
@@ -152,14 +167,14 @@ def addInterDivisionInterLeagueGames(mlb, games):
 					for home_team in home_teams:
 						for away_division, away_teams in away_divisions.iteritems():
 							for away_team in away_teams:
-								for i in range(1):
+								for i in range(num):
 									addGame(games, home_team, away_team)
 
 
-def planSchedule(mlb, games):
-	addIntraDivisionIntraLeagueGames(mlb, games)
-	addInterDivisionIntraLeagueGames(mlb, games)
-	addInterDivisionInterLeagueGames(mlb, games)
+def planSchedule(mlb, games, num_division, num_league, num_others):
+	addIntraDivisionIntraLeagueGames(mlb, games, num_division)
+	addInterDivisionIntraLeagueGames(mlb, games, num_league)
+	addInterDivisionInterLeagueGames(mlb, games, num_others)
 	random.shuffle(games)
 
 
@@ -224,10 +239,10 @@ def main(argv):
 	if config["h"]:
 		display_help_messages(options)
 	mlb, games, rankings = create_mlb(), [], {}
-	planSchedule(mlb, games)
+	planSchedule(mlb, games, config["i"], config["j"], config["k"])
 	playGames(games)
 	createRankings(mlb, games, rankings)
-	if not config["s"]:
+	if config["s"]:
 		displayScores(games)
 	if not config["r"]:
 		displayRankings(rankings)
