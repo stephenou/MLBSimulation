@@ -4,7 +4,7 @@
 # Author: Stephen Ou
 # -----------------------------------------------------
 
-import random, sys, getopt
+import random, sys, getopt, operator, collections
 
 def get_options():
 	options = [
@@ -226,11 +226,11 @@ def displayScores(games):
 
 
 def sortRankings(rankings):
-	rankings.sort(key=lambda stats: stats["games_won"])
+	return collections.OrderedDict(sorted(rankings.items(), key=operator.itemgetter(1)))
 
 
 def displayRankings(rankings):
-	sortRankings(rankings)
+	rankings = sortRankings(rankings)
 	for team, stats in rankings.iteritems():
 		print ("%-24s %d W {s} %d L {s} %d S {s} %d G" % (
 			team,
