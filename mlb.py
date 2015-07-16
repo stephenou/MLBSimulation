@@ -100,6 +100,8 @@ def get_config(argv, options):
 	for option in options:
 		config[option["short"]] = option["default"]
 		optstr += option["short"]
+		if option["default"]:
+			optstr += ":"
 	opts, args = getopt.getopt(argv, optstr)
 	for opt, arg in opts:
 		for option in options:
@@ -172,6 +174,7 @@ def addInterDivisionInterLeagueGames(mlb, games, num):
 
 
 def planSchedule(mlb, games, num_division, num_league, num_others):
+	num_division, num_league, num_others = int(num_division), int(num_league), int(num_others)
 	addIntraDivisionIntraLeagueGames(mlb, games, num_division)
 	addInterDivisionIntraLeagueGames(mlb, games, num_league)
 	addInterDivisionInterLeagueGames(mlb, games, num_others)
