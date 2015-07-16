@@ -225,7 +225,12 @@ def displayScores(games):
 		)
 
 
+def sortRankings(rankings):
+	rankings.sort(key=lambda stats: stats["games_won"])
+
+
 def displayRankings(rankings):
+	sortRankings(rankings)
 	for team, stats in rankings.iteritems():
 		print ("%-24s %d W {s} %d L {s} %d S {s} %d G" % (
 			team,
