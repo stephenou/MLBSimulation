@@ -95,6 +95,15 @@ def get_config(argv, options):
 					config[option["short"]] = arg
 	return config
 
+
+def display_help_messages(options):
+	for option in options:
+		print "Short Name: %s" % option["short"]
+		print "Full Name: %s" % option["full"]
+		print "Default: %s" % option["default"]
+		print "Description: %s" % option["description"]
+
+
 def get_scores():
 	home_score, away_score = 0, 0
 	for i in range(9):
@@ -210,7 +219,10 @@ def displayRankings(rankings):
 
 
 def main(argv):
-	config = get_config(argv, get_options())
+	options = get_options()
+	config = get_config(argv, options)
+	if config["h"]:
+		display_help_messages(options)
 	mlb, games, rankings = create_mlb(), [], {}
 	planSchedule(mlb, games)
 	playGames(games)
