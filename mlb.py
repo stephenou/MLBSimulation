@@ -231,11 +231,13 @@ def displayScores(games):
 
 
 def displayDistribution(games):
-	count = [0 for i in range(9)]
+	game_count = [0 for i in range(9)]
 	for game in games:
-		count[game["home_score"] - 1] += 1
-	for index, score in enumerate(count):
-		print str(index + 1) + " " + "+" * score
+		game_count[game["home_score"] - 1] += 1
+	total_count = sum(game_count)
+	for index, count in enumerate(game_count):
+		percent = count * 100 / float(total_count)
+		print "%d %6.2f%%  %s" % (index + 1, percent, "+" * int(round(percent)))
 
 
 def sortRankings(rankings):
