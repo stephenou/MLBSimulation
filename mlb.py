@@ -24,6 +24,11 @@ def get_options():
 			"default": False,
 			"description": "Display the scores."
 		}, {
+			"short": "d",
+			"full": "distribution",
+			"default": False,
+			"description": "Display the score distribution."
+		}, {
 			"short": "i",
 			"full": "num-division",
 			"default": 4,
@@ -225,6 +230,14 @@ def displayScores(games):
 		)
 
 
+def displayDistribution(games):
+	count = [0 for i in range(9)]
+	for game in games:
+		count[game["home_score"] - 1] += 1
+	for index, score in enumerate(count):
+		print str(index + 1) + " " + "+" * score
+
+
 def sortRankings(rankings):
 	return collections.OrderedDict(sorted(rankings.items(), key=operator.itemgetter(1)))
 
@@ -252,6 +265,8 @@ def main(argv):
 	createRankings(mlb, games, rankings)
 	if config["s"]:
 		displayScores(games)
+	if config["d"]:
+		displayDistribution(games)
 	if not config["r"]:
 		displayRankings(rankings)
 
