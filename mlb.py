@@ -218,6 +218,7 @@ def create_rankings(mlb, games, rankings):
 		else:
 			rankings[game["home_team"]]["games_lost"] += 1
 			rankings[game["away_team"]]["games_won"] += 1
+	return sort_rankings(rankings)
 
 
 def display_scores(games):
@@ -244,16 +245,19 @@ def sort_rankings(rankings):
 	return collections.OrderedDict(sorted(rankings.items(), key=operator.itemgetter(1)))
 
 
-def display_rankings(rankings):
-	rankings = sort_rankings(rankings)
-	for team, stats in rankings.iteritems():
-		print ("%-24s %d W {s} %d L {s} %d S {s} %d G" % (
+def print_ranking(team, stats):
+	print ("%-24s %d W {s} %d L {s} %d S {s} %d G" % (
 			team,
 			stats["games_won"],
 			stats["games_lost"],
 			stats["points_won"],
 			stats["points_lost"]
 		)).format(s=" " * 2)
+
+
+def display_all_rankings(rankings):
+	for team, stats in rankings.iteritems():
+		print_ranking(team, stats)
 
 
 def main(argv):
@@ -264,13 +268,13 @@ def main(argv):
 	mlb, games, rankings = create_mlb(), [], {}
 	plan_schedule(mlb, games, config["i"], config["j"], config["k"])
 	play_games(games)
-	create_rankings(mlb, games, rankings)
+	rankings = create_rankings(mlb, games, rankings)
 	if config["s"]:
 		display_scores(games)
 	if config["d"]:
 		display_distribution(games)
 	if not config["r"]:
-		display_rankings(rankings)
+		display_all_rankings(rankings)
 
 if __name__ == "__main__":
    main(sys.argv[1:])
