@@ -136,24 +136,24 @@ def get_scores():
 	return home_score, away_score
 
 
-def addGame(games, home_team, away_team):
+def add_game(games, home_team, away_team):
 	games.append({
 		"home_team": home_team,
 		"away_team": away_team
 	})
 
 
-def addIntraDivisionIntraLeagueGames(mlb, games, num):
+def add_division_games(mlb, games, num):
 	for league, divisions in mlb.iteritems():
 		for division, teams in divisions.iteritems():
 			for home_team in teams:
 				for away_team in teams:
 					if home_team is not away_team:
 						for i in range(num):
-							addGame(games, home_team, away_team)
+							add_game(games, home_team, away_team)
 
 
-def addInterDivisionIntraLeagueGames(mlb, games, num):
+def add_league_games(mlb, games, num):
 	for league, divisions in mlb.iteritems():
 		for home_division, home_teams in divisions.iteritems():
 			divisions_to_play = [division for division in divisions.keys() if division is not home_division]
@@ -162,10 +162,10 @@ def addInterDivisionIntraLeagueGames(mlb, games, num):
 					for home_team in home_teams:
 						for away_team in away_teams:
 							for i in range(num):
-								addGame(games, home_team, away_team)
+								add_game(games, home_team, away_team)
 
 
-def addInterDivisionInterLeagueGames(mlb, games, num):
+def add_other_games(mlb, games, num):
 	for home_league, home_divisions in mlb.iteritems():
 		leagues_to_play = [league for league in mlb.keys() if league is not home_league]
 		for away_league, away_divisions in mlb.iteritems():
@@ -175,18 +175,18 @@ def addInterDivisionInterLeagueGames(mlb, games, num):
 						for away_division, away_teams in away_divisions.iteritems():
 							for away_team in away_teams:
 								for i in range(num):
-									addGame(games, home_team, away_team)
+									add_game(games, home_team, away_team)
 
 
-def planSchedule(mlb, games, num_division, num_league, num_others):
+def plan_schedule(mlb, games, num_division, num_league, num_others):
 	num_division, num_league, num_others = int(num_division), int(num_league), int(num_others)
-	addIntraDivisionIntraLeagueGames(mlb, games, num_division)
-	addInterDivisionIntraLeagueGames(mlb, games, num_league)
-	addInterDivisionInterLeagueGames(mlb, games, num_others)
+	add_division_games(mlb, games, num_division)
+	add_league_games(mlb, games, num_league)
+	add_other_games(mlb, games, num_others)
 	random.shuffle(games)
 
 
-def playGames(games):
+def play_games(games):
 	for index, game in enumerate(games):
 		home_score, away_score = get_scores()
 		games[index]["home_score"] = home_score
@@ -205,7 +205,7 @@ def initializeTeams(mlb, rankings):
 				}
 
 
-def createRankings(mlb, games, rankings):
+def create_rankings(mlb, games, rankings):
 	initializeTeams(mlb, rankings)
 	for game in games:
 		rankings[game["home_team"]]["points_won"] += game["home_score"]
@@ -220,7 +220,7 @@ def createRankings(mlb, games, rankings):
 			rankings[game["away_team"]]["games_won"] += 1
 
 
-def displayScores(games):
+def display_scores(games):
 	for game in games:
 		print "%-24s %d - %d %24s" % (
 			game["home_team"],
@@ -230,7 +230,7 @@ def displayScores(games):
 		)
 
 
-def displayDistribution(games):
+def display_distribution(games):
 	game_count = [0 for i in range(9)]
 	for game in games:
 		game_count[game["home_score"] - 1] += 1
@@ -240,12 +240,12 @@ def displayDistribution(games):
 		print "%d %6.2f%%  %s" % (index + 1, percent, "+" * int(round(percent)))
 
 
-def sortRankings(rankings):
+def sort_rankings(rankings):
 	return collections.OrderedDict(sorted(rankings.items(), key=operator.itemgetter(1)))
 
 
-def displayRankings(rankings):
-	rankings = sortRankings(rankings)
+def display_rankings(rankings):
+	rankings = sort_rankings(rankings)
 	for team, stats in rankings.iteritems():
 		print ("%-24s %d W {s} %d L {s} %d S {s} %d G" % (
 			team,
@@ -262,15 +262,15 @@ def main(argv):
 	if config["h"]:
 		display_help_messages(options)
 	mlb, games, rankings = create_mlb(), [], {}
-	planSchedule(mlb, games, config["i"], config["j"], config["k"])
-	playGames(games)
-	createRankings(mlb, games, rankings)
+	plan_schedule(mlb, games, config["i"], config["j"], config["k"])
+	play_games(games)
+	create_rankings(mlb, games, rankings)
 	if config["s"]:
-		displayScores(games)
+		display_scores(games)
 	if config["d"]:
-		displayDistribution(games)
+		display_distribution(games)
 	if not config["r"]:
-		displayRankings(rankings)
+		display_rankings(rankings)
 
 if __name__ == "__main__":
    main(sys.argv[1:])
