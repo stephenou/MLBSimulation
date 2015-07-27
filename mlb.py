@@ -260,6 +260,14 @@ def display_all_rankings(rankings):
 		print_ranking(team, stats)
 
 
+def display_league_rankings(rankings, mlb):
+	return
+
+
+def display_division_rankings(rankings, mlb):
+	return
+
+
 def main(argv):
 	options = get_options()
 	config = get_config(argv, options)
